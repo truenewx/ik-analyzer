@@ -124,6 +124,7 @@ public class SWMCQueryBuilder {
         // 借助lucene queryparser 生成SWMC Query
         QueryParser qp = new QueryParser(fieldName, new StandardAnalyzer());
         qp.setDefaultOperator(QueryParser.AND_OPERATOR);
+        qp.setSplitOnWhitespace(true);
         qp.setAutoGeneratePhraseQueries(true);
 
         if (quickMode && (shortCount * 1.0f / totalCount) > 0.5f) {

@@ -29,19 +29,13 @@ import java.util.List;
 import java.util.Stack;
 
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.*;
 import org.apache.lucene.search.BooleanClause.Occur;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.TermRangeQuery;
 import org.apache.lucene.util.BytesRef;
 
 /**
  * IK简易查询表达式解析 结合SWMCQuery算法
- * <p>
- * 表达式例子 ： (id='1231231' && title:'monkey') || (content:'你好吗' || ulr='www.ik.com') -
- * name:'helloword'
+ * <p> 表达式例子 ： (id='1231231' && title:'monkey') || (content:'你好吗' || ulr='www.ik.com') - name:'helloword'
  *
  * @author linliangyi
  */
@@ -63,7 +57,7 @@ public class IKQueryExpressionParser {
      * @return Lucene query
      */
     public Query parseExp(String expression, boolean quickMode) {
-        Query lucenceQuery = null;
+        Query luceneQuery = null;
         if (expression != null && !"".equals(expression.trim())) {
             try {
                 // 文法解析
@@ -71,7 +65,7 @@ public class IKQueryExpressionParser {
                 // 语法解析
                 this.parseSyntax(quickMode);
                 if (this.querys.size() == 1) {
-                    lucenceQuery = this.querys.pop();
+                    luceneQuery = this.querys.pop();
                 } else {
                     throw new IllegalStateException("表达式异常： 缺少逻辑操作符 或 括号缺失");
                 }
@@ -81,7 +75,7 @@ public class IKQueryExpressionParser {
                 this.operates.clear();
             }
         }
-        return lucenceQuery;
+        return luceneQuery;
     }
 
     /**
@@ -94,264 +88,264 @@ public class IKQueryExpressionParser {
         if (expression == null) {
             return;
         }
-        Element curretElement = null;
+        Element currentElement = null;
 
         char[] expChars = expression.toCharArray();
-        for (int i = 0; i < expChars.length; i++) {
-            switch (expChars[i]) {
+        for (char expChar : expChars) {
+            switch (expChar) {
                 case '&':
-                    if (curretElement == null) {
-                        curretElement = new Element();
-                        curretElement.type = '&';
-                        curretElement.append(expChars[i]);
-                    } else if (curretElement.type == '&') {
-                        curretElement.append(expChars[i]);
-                        this.elements.add(curretElement);
-                        curretElement = null;
-                    } else if (curretElement.type == '\'') {
-                        curretElement.append(expChars[i]);
+                    if (currentElement == null) {
+                        currentElement = new Element();
+                        currentElement.type = '&';
+                        currentElement.append(expChar);
+                    } else if (currentElement.type == '&') {
+                        currentElement.append(expChar);
+                        this.elements.add(currentElement);
+                        currentElement = null;
+                    } else if (currentElement.type == '\'') {
+                        currentElement.append(expChar);
                     } else {
-                        this.elements.add(curretElement);
-                        curretElement = new Element();
-                        curretElement.type = '&';
-                        curretElement.append(expChars[i]);
+                        this.elements.add(currentElement);
+                        currentElement = new Element();
+                        currentElement.type = '&';
+                        currentElement.append(expChar);
                     }
                     break;
 
                 case '|':
-                    if (curretElement == null) {
-                        curretElement = new Element();
-                        curretElement.type = '|';
-                        curretElement.append(expChars[i]);
-                    } else if (curretElement.type == '|') {
-                        curretElement.append(expChars[i]);
-                        this.elements.add(curretElement);
-                        curretElement = null;
-                    } else if (curretElement.type == '\'') {
-                        curretElement.append(expChars[i]);
+                    if (currentElement == null) {
+                        currentElement = new Element();
+                        currentElement.type = '|';
+                        currentElement.append(expChar);
+                    } else if (currentElement.type == '|') {
+                        currentElement.append(expChar);
+                        this.elements.add(currentElement);
+                        currentElement = null;
+                    } else if (currentElement.type == '\'') {
+                        currentElement.append(expChar);
                     } else {
-                        this.elements.add(curretElement);
-                        curretElement = new Element();
-                        curretElement.type = '|';
-                        curretElement.append(expChars[i]);
+                        this.elements.add(currentElement);
+                        currentElement = new Element();
+                        currentElement.type = '|';
+                        currentElement.append(expChar);
                     }
                     break;
 
                 case '-':
-                    if (curretElement != null) {
-                        if (curretElement.type == '\'') {
-                            curretElement.append(expChars[i]);
+                    if (currentElement != null) {
+                        if (currentElement.type == '\'') {
+                            currentElement.append(expChar);
                             continue;
                         } else {
-                            this.elements.add(curretElement);
+                            this.elements.add(currentElement);
                         }
                     }
-                    curretElement = new Element();
-                    curretElement.type = '-';
-                    curretElement.append(expChars[i]);
-                    this.elements.add(curretElement);
-                    curretElement = null;
+                    currentElement = new Element();
+                    currentElement.type = '-';
+                    currentElement.append(expChar);
+                    this.elements.add(currentElement);
+                    currentElement = null;
                     break;
 
                 case '(':
-                    if (curretElement != null) {
-                        if (curretElement.type == '\'') {
-                            curretElement.append(expChars[i]);
+                    if (currentElement != null) {
+                        if (currentElement.type == '\'') {
+                            currentElement.append(expChar);
                             continue;
                         } else {
-                            this.elements.add(curretElement);
+                            this.elements.add(currentElement);
                         }
                     }
-                    curretElement = new Element();
-                    curretElement.type = '(';
-                    curretElement.append(expChars[i]);
-                    this.elements.add(curretElement);
-                    curretElement = null;
+                    currentElement = new Element();
+                    currentElement.type = '(';
+                    currentElement.append(expChar);
+                    this.elements.add(currentElement);
+                    currentElement = null;
                     break;
 
                 case ')':
-                    if (curretElement != null) {
-                        if (curretElement.type == '\'') {
-                            curretElement.append(expChars[i]);
+                    if (currentElement != null) {
+                        if (currentElement.type == '\'') {
+                            currentElement.append(expChar);
                             continue;
                         } else {
-                            this.elements.add(curretElement);
+                            this.elements.add(currentElement);
                         }
                     }
-                    curretElement = new Element();
-                    curretElement.type = ')';
-                    curretElement.append(expChars[i]);
-                    this.elements.add(curretElement);
-                    curretElement = null;
+                    currentElement = new Element();
+                    currentElement.type = ')';
+                    currentElement.append(expChar);
+                    this.elements.add(currentElement);
+                    currentElement = null;
                     break;
 
                 case ':':
-                    if (curretElement != null) {
-                        if (curretElement.type == '\'') {
-                            curretElement.append(expChars[i]);
+                    if (currentElement != null) {
+                        if (currentElement.type == '\'') {
+                            currentElement.append(expChar);
                             continue;
                         } else {
-                            this.elements.add(curretElement);
+                            this.elements.add(currentElement);
                         }
                     }
-                    curretElement = new Element();
-                    curretElement.type = ':';
-                    curretElement.append(expChars[i]);
-                    this.elements.add(curretElement);
-                    curretElement = null;
+                    currentElement = new Element();
+                    currentElement.type = ':';
+                    currentElement.append(expChar);
+                    this.elements.add(currentElement);
+                    currentElement = null;
                     break;
 
                 case '=':
-                    if (curretElement != null) {
-                        if (curretElement.type == '\'') {
-                            curretElement.append(expChars[i]);
+                    if (currentElement != null) {
+                        if (currentElement.type == '\'') {
+                            currentElement.append(expChar);
                             continue;
                         } else {
-                            this.elements.add(curretElement);
+                            this.elements.add(currentElement);
                         }
                     }
-                    curretElement = new Element();
-                    curretElement.type = '=';
-                    curretElement.append(expChars[i]);
-                    this.elements.add(curretElement);
-                    curretElement = null;
+                    currentElement = new Element();
+                    currentElement.type = '=';
+                    currentElement.append(expChar);
+                    this.elements.add(currentElement);
+                    currentElement = null;
                     break;
 
                 case ' ':
-                    if (curretElement != null) {
-                        if (curretElement.type == '\'') {
-                            curretElement.append(expChars[i]);
+                    if (currentElement != null) {
+                        if (currentElement.type == '\'') {
+                            currentElement.append(expChar);
                         } else {
-                            this.elements.add(curretElement);
-                            curretElement = null;
+                            this.elements.add(currentElement);
+                            currentElement = null;
                         }
                     }
 
                     break;
 
                 case '\'':
-                    if (curretElement == null) {
-                        curretElement = new Element();
-                        curretElement.type = '\'';
+                    if (currentElement == null) {
+                        currentElement = new Element();
+                        currentElement.type = '\'';
 
-                    } else if (curretElement.type == '\'') {
-                        this.elements.add(curretElement);
-                        curretElement = null;
+                    } else if (currentElement.type == '\'') {
+                        this.elements.add(currentElement);
+                        currentElement = null;
 
                     } else {
-                        this.elements.add(curretElement);
-                        curretElement = new Element();
-                        curretElement.type = '\'';
+                        this.elements.add(currentElement);
+                        currentElement = new Element();
+                        currentElement.type = '\'';
 
                     }
                     break;
 
                 case '[':
-                    if (curretElement != null) {
-                        if (curretElement.type == '\'') {
-                            curretElement.append(expChars[i]);
+                    if (currentElement != null) {
+                        if (currentElement.type == '\'') {
+                            currentElement.append(expChar);
                             continue;
                         } else {
-                            this.elements.add(curretElement);
+                            this.elements.add(currentElement);
                         }
                     }
-                    curretElement = new Element();
-                    curretElement.type = '[';
-                    curretElement.append(expChars[i]);
-                    this.elements.add(curretElement);
-                    curretElement = null;
+                    currentElement = new Element();
+                    currentElement.type = '[';
+                    currentElement.append(expChar);
+                    this.elements.add(currentElement);
+                    currentElement = null;
                     break;
 
                 case ']':
-                    if (curretElement != null) {
-                        if (curretElement.type == '\'') {
-                            curretElement.append(expChars[i]);
+                    if (currentElement != null) {
+                        if (currentElement.type == '\'') {
+                            currentElement.append(expChar);
                             continue;
                         } else {
-                            this.elements.add(curretElement);
+                            this.elements.add(currentElement);
                         }
                     }
-                    curretElement = new Element();
-                    curretElement.type = ']';
-                    curretElement.append(expChars[i]);
-                    this.elements.add(curretElement);
-                    curretElement = null;
+                    currentElement = new Element();
+                    currentElement.type = ']';
+                    currentElement.append(expChar);
+                    this.elements.add(currentElement);
+                    currentElement = null;
 
                     break;
 
                 case '{':
-                    if (curretElement != null) {
-                        if (curretElement.type == '\'') {
-                            curretElement.append(expChars[i]);
+                    if (currentElement != null) {
+                        if (currentElement.type == '\'') {
+                            currentElement.append(expChar);
                             continue;
                         } else {
-                            this.elements.add(curretElement);
+                            this.elements.add(currentElement);
                         }
                     }
-                    curretElement = new Element();
-                    curretElement.type = '{';
-                    curretElement.append(expChars[i]);
-                    this.elements.add(curretElement);
-                    curretElement = null;
+                    currentElement = new Element();
+                    currentElement.type = '{';
+                    currentElement.append(expChar);
+                    this.elements.add(currentElement);
+                    currentElement = null;
                     break;
 
                 case '}':
-                    if (curretElement != null) {
-                        if (curretElement.type == '\'') {
-                            curretElement.append(expChars[i]);
+                    if (currentElement != null) {
+                        if (currentElement.type == '\'') {
+                            currentElement.append(expChar);
                             continue;
                         } else {
-                            this.elements.add(curretElement);
+                            this.elements.add(currentElement);
                         }
                     }
-                    curretElement = new Element();
-                    curretElement.type = '}';
-                    curretElement.append(expChars[i]);
-                    this.elements.add(curretElement);
-                    curretElement = null;
+                    currentElement = new Element();
+                    currentElement.type = '}';
+                    currentElement.append(expChar);
+                    this.elements.add(currentElement);
+                    currentElement = null;
 
                     break;
                 case ',':
-                    if (curretElement != null) {
-                        if (curretElement.type == '\'') {
-                            curretElement.append(expChars[i]);
+                    if (currentElement != null) {
+                        if (currentElement.type == '\'') {
+                            currentElement.append(expChar);
                             continue;
                         } else {
-                            this.elements.add(curretElement);
+                            this.elements.add(currentElement);
                         }
                     }
-                    curretElement = new Element();
-                    curretElement.type = ',';
-                    curretElement.append(expChars[i]);
-                    this.elements.add(curretElement);
-                    curretElement = null;
+                    currentElement = new Element();
+                    currentElement.type = ',';
+                    currentElement.append(expChar);
+                    this.elements.add(currentElement);
+                    currentElement = null;
 
                     break;
 
                 default:
-                    if (curretElement == null) {
-                        curretElement = new Element();
-                        curretElement.type = 'F';
-                        curretElement.append(expChars[i]);
+                    if (currentElement == null) {
+                        currentElement = new Element();
+                        currentElement.type = 'F';
+                        currentElement.append(expChar);
 
-                    } else if (curretElement.type == 'F') {
-                        curretElement.append(expChars[i]);
+                    } else if (currentElement.type == 'F') {
+                        currentElement.append(expChar);
 
-                    } else if (curretElement.type == '\'') {
-                        curretElement.append(expChars[i]);
+                    } else if (currentElement.type == '\'') {
+                        currentElement.append(expChar);
 
                     } else {
-                        this.elements.add(curretElement);
-                        curretElement = new Element();
-                        curretElement.type = 'F';
-                        curretElement.append(expChars[i]);
+                        this.elements.add(currentElement);
+                        currentElement = new Element();
+                        currentElement.type = 'F';
+                        currentElement.append(expChar);
                     }
             }
         }
 
-        if (curretElement != null) {
-            this.elements.add(curretElement);
-            curretElement = null;
+        if (currentElement != null) {
+            this.elements.add(currentElement);
+            currentElement = null;
         }
     }
 
@@ -376,8 +370,8 @@ public class IKQueryExpressionParser {
                     } else if (':' == e2.type) {
                         String keyword = e3.toString();
                         // SWMCQuery Here
-                        Query _SWMCQuery = SWMCQueryBuilder.create(e.toString(), keyword, quickMode);
-                        this.querys.push(_SWMCQuery);
+                        Query swmcQuery = SWMCQueryBuilder.create(e.toString(), keyword, quickMode);
+                        this.querys.push(swmcQuery);
                     }
 
                 } else if ('[' == e3.type || '{' == e3.type) {

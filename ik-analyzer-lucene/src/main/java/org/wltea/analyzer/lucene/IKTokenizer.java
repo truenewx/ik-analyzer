@@ -48,8 +48,7 @@ public final class IKTokenizer extends Tokenizer {
     /**
      * Lucene 3.5 Tokenizer适配器类构造函数
      *
-     * @param in
-     * @param useSmart
+     * @param useSmart 是否使用智能模式
      */
     public IKTokenizer(boolean useSmart) {
         super();

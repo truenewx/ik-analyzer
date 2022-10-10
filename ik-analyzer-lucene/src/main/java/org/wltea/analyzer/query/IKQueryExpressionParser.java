@@ -35,10 +35,10 @@ import org.apache.lucene.util.BytesRef;
 
 /**
  * IK简易查询表达式解析 结合SWMCQuery算法
- * <p> 表达式例子 ： (id='1231231' && title:'monkey') || (content:'你好吗' || ulr='www.ik.com') - name:'helloword'
  *
  * @author linliangyi
  */
+// 表达式例子 ： (id='1231231' && title:'monkey') || (content:'你好吗' || ulr='www.ik.com') - name:'helloword'
 public class IKQueryExpressionParser {
 
     // public static final String LUCENE_SPECIAL_CHAR = "&&||-()':={}[],";
@@ -52,8 +52,8 @@ public class IKQueryExpressionParser {
     /**
      * 解析查询表达式，生成Lucene Query对象
      *
-     * @param expression
-     * @param quickMode
+     * @param expression 查询表达式
+     * @param quickMode  是否快速模式
      * @return Lucene query
      */
     public Query parseExp(String expression, boolean quickMode) {
@@ -81,7 +81,7 @@ public class IKQueryExpressionParser {
     /**
      * 表达式文法解析
      *
-     * @param expression
+     * @param expression 表达式
      */
     private void splitElements(String expression) {
 
@@ -351,6 +351,8 @@ public class IKQueryExpressionParser {
 
     /**
      * 语法解析
+     *
+     * @param quickMode 是否快速模式
      */
     private void parseSyntax(boolean quickMode) {
         for (int i = 0; i < this.elements.size(); i++) {
@@ -450,8 +452,8 @@ public class IKQueryExpressionParser {
     /**
      * 根据逻辑操作符，生成BooleanQuery
      *
-     * @param op
-     * @return
+     * @param op 元素
+     * @return Lucene Query
      */
     private Query toBooleanQuery(Element op) {
         if (this.querys.size() == 0) {
@@ -579,8 +581,9 @@ public class IKQueryExpressionParser {
     /**
      * 组装TermRangeQuery
      *
-     * @param elements
-     * @return
+     * @param fieldNameEle 字段名元素
+     * @param elements     元素集合
+     * @return TermRangeQuery
      */
     private TermRangeQuery toTermRangeQuery(Element fieldNameEle, LinkedList<Element> elements) {
 
@@ -646,9 +649,9 @@ public class IKQueryExpressionParser {
     /**
      * 比较操作符优先级
      *
-     * @param e1
-     * @param e2
-     * @return
+     * @param e1 元素1
+     * @param e2 元素2
+     * @return 比较结果
      */
     private int compare(Element e1, Element e2) {
         if ('&' == e1.type) {

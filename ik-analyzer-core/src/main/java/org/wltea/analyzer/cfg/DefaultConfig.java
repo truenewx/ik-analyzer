@@ -98,7 +98,7 @@ public class DefaultConfig implements Configuration {
      * 设置useSmart标志位
      * useSmart =true ，分词器使用智能切分策略， =false则使用细粒度切分
      *
-     * @param useSmart
+     * @param useSmart 是否使用智能切分策略
      */
     @Override
     public void setUseSmart(boolean useSmart) {
@@ -108,7 +108,7 @@ public class DefaultConfig implements Configuration {
     /**
      * 获取主词典路径
      *
-     * @return String 主词典路径
+     * @return 主词典路径
      */
     @Override
     public String getMainDictionary() {
@@ -118,7 +118,7 @@ public class DefaultConfig implements Configuration {
     /**
      * 获取量词词典路径
      *
-     * @return String 量词词典路径
+     * @return 量词词典路径
      */
     @Override
     public String getQuantifierDicionary() {
@@ -128,7 +128,7 @@ public class DefaultConfig implements Configuration {
     /**
      * 获取扩展字典配置路径
      *
-     * @return List<String> 相对类加载器的路径
+     * @return 相对类加载器的路径
      */
     @Override
     public List<String> getExtDictionarys() {
@@ -152,7 +152,7 @@ public class DefaultConfig implements Configuration {
     /**
      * 获取扩展停止词典配置路径
      *
-     * @return List<String> 相对类加载器的路径
+     * @return 相对类加载器的路径
      */
     @Override
     public List<String> getExtStopWordDictionarys() {

@@ -34,7 +34,6 @@ import org.wltea.analyzer.dic.Dictionary;
 
 /**
  * IK分词器主类
- *
  */
 public final class IKSegmenter {
 
@@ -52,11 +51,12 @@ public final class IKSegmenter {
 
     /**
      * IK分词器构造函数
-     * @param input
-     * @param useSmart 为true，使用智能分词策略
      *
-     * 非智能分词：细粒度输出所有可能的切分结果
-     * 智能分词： 合并数词和量词，对分词结果进行歧义判断
+     * @param input    输入
+     * @param useSmart 为true，使用智能分词策略
+     *                 <p>
+     *                 非智能分词：细粒度输出所有可能的切分结果
+     *                 智能分词： 合并数词和量词，对分词结果进行歧义判断
      */
     public IKSegmenter(Reader input, boolean useSmart) {
         this.input = input;
@@ -67,9 +67,9 @@ public final class IKSegmenter {
 
     /**
      * IK分词器构造函数
-     * @param input
-     * @param cfg 使用自定义的Configuration构造分词器
      *
+     * @param input 输入
+     * @param cfg   使用自定义的Configuration构造分词器
      */
     public IKSegmenter(Reader input, Configuration cfg) {
         this.input = input;
@@ -93,7 +93,8 @@ public final class IKSegmenter {
 
     /**
      * 初始化词典，加载子分词器实现
-     * @return List<ISegmenter>
+     *
+     * @return 子分词器实现清单
      */
     private List<ISegmenter> loadSegmenters() {
         List<ISegmenter> segmenters = new ArrayList<ISegmenter>(4);
@@ -108,8 +109,9 @@ public final class IKSegmenter {
 
     /**
      * 分词，获取下一个词元
+     *
      * @return Lexeme 词元对象
-     * @throws IOException
+     * @throws IOException 如果处理过程中出现IO错误
      */
     public synchronized Lexeme next() throws IOException {
         Lexeme l = null;
@@ -123,12 +125,12 @@ public final class IKSegmenter {
             int available = this.context.fillBuffer(this.input);
             if (available <= 0) {
                 //reader已经读完
-				this.context.reset();
+                this.context.reset();
                 return null;
 
             } else {
                 //初始化指针
-				this.context.initCursor();
+                this.context.initCursor();
                 do {
                     //遍历子分词器
                     for (ISegmenter segmenter : this.segmenters) {
@@ -148,9 +150,9 @@ public final class IKSegmenter {
             //对分词进行歧义处理
             this.arbitrator.process(this.context, this.cfg.useSmart());
             //处理未切分CJK字符
-			this.context.outputToResult();
+            this.context.outputToResult();
             //记录本次分词的缓冲区位移
-			this.context.markBufferOffset();
+            this.context.markBufferOffset();
         }
 
         return l;
@@ -158,11 +160,12 @@ public final class IKSegmenter {
 
     /**
      * 重置分词器到初始状态
-     * @param input
+     *
+     * @param input 输入
      */
     public synchronized void reset(Reader input) {
         this.input = input;
-		this.context.reset();
+        this.context.reset();
         for (ISegmenter segmenter : this.segmenters) {
             segmenter.reset();
         }

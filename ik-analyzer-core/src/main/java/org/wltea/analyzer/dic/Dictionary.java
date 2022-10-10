@@ -75,7 +75,9 @@ public class Dictionary {
      * 只有当Dictionary类被实际调用时，才会开始载入词典，
      * 这将延长首次分词操作的时间
      * 该方法提供了一个在应用加载阶段就初始化字典的手段
-     * @return Dictionary
+     *
+     * @param cfg 配置
+     * @return 词典
      */
     public static Dictionary initial(Configuration cfg) {
         if (singleton == null) {
@@ -91,7 +93,8 @@ public class Dictionary {
 
     /**
      * 获取词典单子实例
-     * @return Dictionary 单例对象
+     *
+     * @return 单例对象
      */
     public static Dictionary getSingleton() {
         if (singleton == null) {
@@ -102,7 +105,8 @@ public class Dictionary {
 
     /**
      * 批量加载新词条
-     * @param words Collection<String>词条列表
+     *
+     * @param words 词条列表
      */
     public void addWords(Collection<String> words) {
         if (words != null) {
@@ -117,7 +121,8 @@ public class Dictionary {
 
     /**
      * 批量移除（屏蔽）词条
-     * @param words
+     *
+     * @param words 词条
      */
     public void disableWords(Collection<String> words) {
         if (words != null) {
@@ -132,8 +137,9 @@ public class Dictionary {
 
     /**
      * 检索匹配主词典
-     * @param charArray
-     * @return Hit 匹配结果描述
+     *
+     * @param charArray 检索字符集合
+     * @return 匹配结果描述
      */
     public Hit matchInMainDict(char[] charArray) {
         return singleton._MainDict.match(charArray);
@@ -141,10 +147,11 @@ public class Dictionary {
 
     /**
      * 检索匹配主词典
-     * @param charArray
-     * @param begin
-     * @param length
-     * @return Hit 匹配结果描述
+     *
+     * @param charArray 检索字符集合
+     * @param begin     开始位置
+     * @param length    长度
+     * @return 匹配结果描述
      */
     public Hit matchInMainDict(char[] charArray, int begin, int length) {
         return singleton._MainDict.match(charArray, begin, length);
@@ -152,10 +159,11 @@ public class Dictionary {
 
     /**
      * 检索匹配量词词典
-     * @param charArray
-     * @param begin
-     * @param length
-     * @return Hit 匹配结果描述
+     *
+     * @param charArray 检索字符集合
+     * @param begin     开始位置
+     * @param length    长度
+     * @return 匹配结果描述
      */
     public Hit matchInQuantifierDict(char[] charArray, int begin, int length) {
         return singleton._QuantifierDict.match(charArray, begin, length);
@@ -164,10 +172,11 @@ public class Dictionary {
 
     /**
      * 从已匹配的Hit中直接取出DictSegment，继续向下匹配
-     * @param charArray
-     * @param currentIndex
-     * @param matchedHit
-     * @return Hit
+     *
+     * @param charArray    检索字符集合
+     * @param currentIndex 当前位置
+     * @param matchedHit   已匹配结果
+     * @return 下一个匹配结果
      */
     public Hit matchWithHit(char[] charArray, int currentIndex, Hit matchedHit) {
         DictSegment ds = matchedHit.getMatchedDictSegment();
@@ -177,10 +186,11 @@ public class Dictionary {
 
     /**
      * 判断是否是停止词
-     * @param charArray
-     * @param begin
-     * @param length
-     * @return boolean
+     *
+     * @param charArray 检索字符集合
+     * @param begin     开始位置
+     * @param length    长度
+     * @return 是否是停止词
      */
     public boolean isStopWord(char[] charArray, int begin, int length) {
         return singleton._StopWordDict.match(charArray, begin, length).isMatch();
@@ -191,7 +201,7 @@ public class Dictionary {
      */
     private void loadMainDict() {
         //建立一个主词典实例
-		this._MainDict = new DictSegment((char) 0);
+        this._MainDict = new DictSegment((char) 0);
         //读取主词典文件
         InputStream is = this.getClass().getClassLoader().getResourceAsStream(this.cfg.getMainDictionary());
         if (is == null) {
@@ -204,7 +214,7 @@ public class Dictionary {
             do {
                 theWord = br.readLine();
                 if (theWord != null && !"".equals(theWord.trim())) {
-					this._MainDict.fillSegment(theWord.trim().toLowerCase().toCharArray());
+                    this._MainDict.fillSegment(theWord.trim().toLowerCase().toCharArray());
                 }
             } while (theWord != null);
 
@@ -250,7 +260,7 @@ public class Dictionary {
                         if (theWord != null && !"".equals(theWord.trim())) {
                             //加载扩展词典数据到主内存词典中
                             //System.out.println(theWord);
-							this._MainDict.fillSegment(theWord.trim().toLowerCase().toCharArray());
+                            this._MainDict.fillSegment(theWord.trim().toLowerCase().toCharArray());
                         }
                     } while (theWord != null);
 
@@ -277,7 +287,7 @@ public class Dictionary {
      */
     private void loadStopWordDict() {
         //建立一个主词典实例
-		this._StopWordDict = new DictSegment((char) 0);
+        this._StopWordDict = new DictSegment((char) 0);
         //加载扩展停止词典
         List<String> extStopWordDictFiles = this.cfg.getExtStopWordDictionarys();
         if (extStopWordDictFiles != null) {
@@ -298,7 +308,7 @@ public class Dictionary {
                         if (theWord != null && !"".equals(theWord.trim())) {
                             //System.out.println(theWord);
                             //加载扩展停止词典数据到内存中
-							this._StopWordDict.fillSegment(theWord.trim().toLowerCase().toCharArray());
+                            this._StopWordDict.fillSegment(theWord.trim().toLowerCase().toCharArray());
                         }
                     } while (theWord != null);
 
@@ -325,7 +335,7 @@ public class Dictionary {
      */
     private void loadQuantifierDict() {
         //建立一个量词典实例
-		this._QuantifierDict = new DictSegment((char) 0);
+        this._QuantifierDict = new DictSegment((char) 0);
         //读取量词词典文件
         InputStream is = this.getClass().getClassLoader().getResourceAsStream(this.cfg.getQuantifierDicionary());
         if (is == null) {
@@ -337,7 +347,7 @@ public class Dictionary {
             do {
                 theWord = br.readLine();
                 if (theWord != null && !"".equals(theWord.trim())) {
-					this._QuantifierDict.fillSegment(theWord.trim().toLowerCase().toCharArray());
+                    this._QuantifierDict.fillSegment(theWord.trim().toLowerCase().toCharArray());
                 }
             } while (theWord != null);
 

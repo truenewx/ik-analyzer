@@ -24,7 +24,7 @@
 package org.wltea.analyzer.core;
 
 /**
- * IK词元对象 
+ * IK词元对象
  */
 public class Lexeme implements Comparable<Lexeme> {
     //lexemeType常量
@@ -77,7 +77,7 @@ public class Lexeme implements Comparable<Lexeme> {
      * @see java.lang.Object#equals(Object o)
      */
     @Override
-	public boolean equals(Object o) {
+    public boolean equals(Object o) {
         if (o == null) {
             return false;
         }
@@ -105,7 +105,7 @@ public class Lexeme implements Comparable<Lexeme> {
      * @see java.lang.Object#hashCode()
      */
     @Override
-	public int hashCode() {
+    public int hashCode() {
         int absBegin = getBeginPosition();
         int absEnd = getEndPosition();
         return (absBegin * 37) + (absEnd * 31) + ((absBegin * absEnd) % getLength()) * 11;
@@ -116,7 +116,7 @@ public class Lexeme implements Comparable<Lexeme> {
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
     @Override
-	public int compareTo(Lexeme other) {
+    public int compareTo(Lexeme other) {
         //起始位置优先
         if (this.begin < other.getBegin()) {
             return -1;
@@ -149,6 +149,7 @@ public class Lexeme implements Comparable<Lexeme> {
 
     /**
      * 获取词元在文本中的起始位置
+     *
      * @return int
      */
     public int getBeginPosition() {
@@ -161,6 +162,7 @@ public class Lexeme implements Comparable<Lexeme> {
 
     /**
      * 获取词元在文本中的结束位置
+     *
      * @return int
      */
     public int getEndPosition() {
@@ -169,6 +171,7 @@ public class Lexeme implements Comparable<Lexeme> {
 
     /**
      * 获取词元的字符长度
+     *
      * @return int
      */
     public int getLength() {
@@ -184,6 +187,7 @@ public class Lexeme implements Comparable<Lexeme> {
 
     /**
      * 获取词元的文本内容
+     *
      * @return String
      */
     public String getLexemeText() {
@@ -205,6 +209,7 @@ public class Lexeme implements Comparable<Lexeme> {
 
     /**
      * 获取词元类型
+     *
      * @return int
      */
     public int getLexemeType() {
@@ -217,8 +222,9 @@ public class Lexeme implements Comparable<Lexeme> {
 
     /**
      * 合并两个相邻的词元
-     * @param l
-     * @param lexemeType
+     *
+     * @param l          词元
+     * @param lexemeType 词元类型
      * @return boolean 词元是否成功合并
      */
     public boolean append(Lexeme l, int lexemeType) {
@@ -235,7 +241,7 @@ public class Lexeme implements Comparable<Lexeme> {
      *
      */
     @Override
-	public String toString() {
+    public String toString() {
         StringBuffer strbuf = new StringBuffer();
         strbuf.append(this.getBeginPosition()).append("-").append(this.getEndPosition());
         strbuf.append(" : ").append(this.lexemeText).append(" : \t");

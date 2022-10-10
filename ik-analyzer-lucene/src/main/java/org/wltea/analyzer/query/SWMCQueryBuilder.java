@@ -45,9 +45,9 @@ public class SWMCQueryBuilder {
     /**
      * 生成SWMCQuery
      *
-     * @param fieldName
-     * @param keywords
-     * @param quickMode
+     * @param fieldName 字段名
+     * @param keywords  关键字
+     * @param quickMode 是否快速模式
      * @return Lucene Query
      */
     public static Query create(String fieldName, String keywords, boolean quickMode) {
@@ -64,8 +64,8 @@ public class SWMCQueryBuilder {
     /**
      * 分词切分，并返回结链表
      *
-     * @param keywords
-     * @return
+     * @param keywords 关键字
+     * @return 结链表
      */
     private static List<Lexeme> doAnalyze(String keywords) {
         List<Lexeme> lexemes = new ArrayList<>();
@@ -84,10 +84,10 @@ public class SWMCQueryBuilder {
     /**
      * 根据分词结果生成SWMC搜索
      *
-     * @param fieldName
-     * @param pathOption
-     * @param quickMode
-     * @return
+     * @param fieldName 字段名
+     * @param lexemes   结链表
+     * @param quickMode 是否快速模式
+     * @return Lucene Query
      */
     private static Query getSWMCQuery(String fieldName, List<Lexeme> lexemes, boolean quickMode) {
         // 构造SWMC的查询表达式
